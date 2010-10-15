@@ -1,12 +1,21 @@
 /*
-	Proto!MultiSelect
-	Copyright: InteRiders <http://interiders.com/> - Distributed under MIT - Keep this message!
+	AutoTextboxList
+  A Javascript/Prototype widget which creates a textbox list (a container which lets the user add multiple
+  distinct values; for instance, could be used for a list of tags or message recipients) with an accompanying
+  autocompleter driven by JSON (optionally via AJAX).
+  
+  Requirements: Prototype <http://www.prototypejs.org> v1.7RC3 or later
+  
+  Available at <http://github.com/dvandersluis/autotextboxlist>
+  
+  Originally forked from Proto!MultiSelect <http://github.com/nathanstitt/protomultiselect>
+  Copyright: InteRiders <http://interiders.com/> - Distributed under MIT - Keep this message!
 */
 
 // Added key contstant for COMMA watching happiness
 Object.extend(Event, { KEY_COMMA: 188, CHAR_COMMA: 44 });
 
-// helper functions
+// Add some helper methods to Prototype's Element class
 Element.addMethods({
 	getCaretPosition: function()
 	{
@@ -30,12 +39,12 @@ Element.addMethods({
 		this[$(element).identify()].set(key,value);
 		return element;
 	},
-	
+
 	retrieveData: function(element, key)
 	{
 		return this[$(element).identify()].get(key);
 	},
-	
+
 	onBoxDispose: function(item, obj)
 	{
 		// Set to not to "add back" values in the drop-down upon delete if they were new value
@@ -82,14 +91,18 @@ function $pick()
 	return null;
 }
 
+
+/* ResizeableTextbox class
+ * Creates a text input that grows wider to fit its content
+ */
 var ResizableTextbox = Class.create({
 	initialize: function(element, options)
 	{
 		var that = this;
 		
 		this.options = $H({
-			minimum: 5,
-			maximum: 500
+			minimum: 5,		// Minimum width in pixels
+			maximum: 500	// Maximum width in pixels
 		}).update(options);
 		
 		this.el = $(element);
@@ -130,11 +143,7 @@ var ResizableTextbox = Class.create({
 		if (!$('__resizeable_textbox_measure_div'))
 		{
 			var div = new Element('div', { id: '__resizeable_textbox_measure_div' })
-			div.setStyle({
-				position: 'absolute',
-				top: '-1000px',
-				left: '-1000px'
-			});
+			div.setStyle({ display: 'none' });
 			$(document.body).insert(div);
 		}
 		else
@@ -158,22 +167,25 @@ var ResizableTextbox = Class.create({
 	}
 });
 
+
+/* TextboxList class
+ * Creates a container that holds a list of textbox values that can be navigated through
+ */
 var TextboxList = Class.create({
 	initialize: function(element, options)
 	{
 		// Default options for TextboxList
 		this.options = $H({
 			resizable: {},
-			className: 'bit',
-			separator: ',',
-			extrainputs: true,
-			startinput: true,
-			onAdd: function(text){},
-			onRemove: function(text){},
-			hideempty: true,
-			newValues: false,
-			spaceReplace: '',
-			encodeEntities: false 
+			className: 'bit',						// Class name given to items
+			separator: ',',							// The character that will separate items in the underlying input
+			extraInputs: true,					// Specifies whether additional inputs are created 
+			startInput: true,						
+			onAdd: function(text){},		// Callback function when an item is added
+			onRemove: function(text){},	// Callback function when an item is removed
+			newValues: true,						// Can new values be created?
+			spaceReplace: '',						// What to replace spaces with in the underlying input
+			encodeEntities: false 			// Should HTML entities be converted into UTF8 characters?
 		});
 
 		this.current_input = "";
@@ -280,10 +292,9 @@ var TextboxList = Class.create({
 		);
 		
 		this.bits.set(id, text.value);
-		// Dynamic updating... why not?
 		this.update(); 
 		
-		if (this.options.get('extrainputs') && (this.options.get('startinput') || el.previous()))
+		if (this.options.get('extraInputs') && (this.options.get('startInput') || el.previous()))
 		{
 			this.addSmallInput(el, 'before');
 		}
@@ -298,7 +309,7 @@ var TextboxList = Class.create({
 		el.insert({}[where] = input);
 		input.cacheData('small', true);
 		this.makeResizable(input);
-		if (this.options.get('hideempty')) input.hide();
+		input.hide();
 		return input;
 	},
 
@@ -418,7 +429,7 @@ var TextboxList = Class.create({
 		}
 		else this.current.fire('onBoxBlur');
 		
-		if (this.current.retrieveData('small') && !input.get('value') && this.options.get('hideempty'))
+		if (this.current.retrieveData('small') && !input.get('value'))
 		{
 			this.current.hide();
 		}
@@ -540,31 +551,43 @@ var TextboxList = Class.create({
 		if (this.current.retrieveData('type') == 'box') return this.dispose(this.current);
 		if (this.checkInput() && this.bits.keys().length && this.current.previous()) return this.focus(this.current.previous());
 		return null;
+	},
+
+	retrieveData: function(element, key)
+	{
+		return this[$(element).identify()].get(key);
 	}
 });
 
-var ProtoMultiSelect = Class.create(TextboxList, {
+
+/* AutoTextboxList class
+ * Extends TextboxList by adding an autocomplete component (fed by JSON provided locally or through AJAX)
+ */
+var AutoTextboxList = Class.create(TextboxList, {
 	initialize: function($super, element, autoholder, options, func)
 	{
-		// Set up default options for ProtoMultiSelect
+		// Set up default options for AutoTextboxList
+		// See also the options for TextboxList, as they are inherited
 		options = $H({
-			fetchFile: undefined,
-			fetchMethod: 'get',
-			results: 10,
-			maxResults: 0, // 0 = set to default (which is 10 (see MultiSelect class)),
-			wordMatch: false,
-			onEmptyInput: function(input){},
-			caseSensitive: false,
-			regexSearch: true,
-			loadFromInput: true,
-			defaultMessage: "",	// Used to provide the default autocomplete message if built by the control
-			sortResults: false,
-			autoDelay: 250,
-			autoResize: false
+			newValues: false,
+			feedURL: undefined,								// URL for the JSON feed, if getting by AJAX
+			feedMethod: 'get',								// HTTP method for AJAX request
+			results: 10,											// Maximum number of results to show in the autocomplete
+			visibleResults: 0,								// How many results are visible at a time in the autocomplete
+			onEmptyInput: function(input){},	// Callback function for when the input is empty
+			caseSensitive: false,							// Is the autocomplete match case sensitive? 
+			regexSearch: true,								// Should matches be made through regex or string methods 
+			wordMatch: false,									// Do matches need to be full words? (only applies if using regexSearch)
+			loadFromInput: true,							// Should any values already in the input on creation be added?
+			defaultMessage: "",								// Used to provide the default autocomplete message if built by the control
+			sortResults: false,								// Should the autocomplete results be sorted?
+			autoDelay: 250,										// Delay in ms before the autocomplete is shown
+			autoResize: false									// Should the autocomplete div be kept the same width as the input?
 		}).update(options);
 
 		$super(element, options);
 
+		// Default options 
 		this.loptions = $H({
 			autocomplete: {
 				opacity: 1,
@@ -603,10 +626,10 @@ var ProtoMultiSelect = Class.create(TextboxList, {
 
 		// Loading the options list only once at initialize.
 		// This would need to be further extended if the list was exceptionally long
-		if (!Object.isUndefined(this.options.get('fetchFile')))
+		if (!Object.isUndefined(this.options.get('feedURL')))
 		{
-			new Ajax.Request(this.options.get('fetchFile'), {
-				method: this.options.get('fetchMethod'),
+			new Ajax.Request(this.options.get('feedURL'), {
+				method: this.options.get('feedMethod'),
 				onSuccess: function(transport)
 				{
 					transport.responseText.evalJSON(true).each(function(t) { this.autoFeed(t); }.bind(this));
@@ -619,10 +642,10 @@ var ProtoMultiSelect = Class.create(TextboxList, {
 			this.options.get('feed').each(function(t) { this.autoFeed(t) }.bind(this));
 		}
 
-		// We need to load from input as part of the AJAX request when using fetchFile
+		// We need to load from input as part of the AJAX request when using feedURL
 		// or else the data won't have completed being fetched before the data in the 
 		// input is loaded
-		if (Object.isUndefined(this.options.get('fetchFile')) && this.options.get('loadFromInput'))
+		if (Object.isUndefined(this.options.get('feedURL')) && this.options.get('loadFromInput'))
 		{
 			this.loadFromInput()
 		}
@@ -700,7 +723,7 @@ var ProtoMultiSelect = Class.create(TextboxList, {
 				function(result, ti)
 				{
 					count++;
-					if (ti >= (this.options.get('maxResults') ? this.options.get('maxResults') : this.loptions.get('autocomplete').maxresults)) return;
+					if (ti >= (this.options.get('visibleResults') ? this.options.get('visibleResults') : this.loptions.get('autocomplete').maxresults)) return;
 					
 					var that = this;
 					var el = new Element('li');
