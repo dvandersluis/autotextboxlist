@@ -1,4 +1,4 @@
-# Proto!MultiSelect
+# AutoTextboxList
 
 Prototype version required: 1.6.0 (1.6.1 for IE8)
 
@@ -24,7 +24,6 @@ Copyright: InteRiders <http://interiders.com/> - Distributed under MIT - Keep th
  - separator: ','
  - extrainputs: true
  - startinput: true
- - hideempty: true
  - newValues: false 
    - allow new values to be created
  - newValueDelimiters: ['[',']']

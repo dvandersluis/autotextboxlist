@@ -3,11 +3,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-    <title>Proto!MultiSelect Demo</title>
+    <title>AutoTextboxList Demo</title>
     <link rel="stylesheet" href="css/multiselect.css" type="text/css" media="screen" title="Test Stylesheet" charset="utf-8" />
     <script src="js/prototype/prototype.js" type="text/javascript" charset="utf-8"></script>
-    <script src="js/prototype/scriptaculous.js" type="text/javascript" charset="utf-8"></script>
-    <script src="js/multiselect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/autotextboxlist.js" type="text/javascript" charset="utf-8"></script>
 		<style>
 			#button_container
 			{
@@ -61,11 +60,11 @@
   </head>
   
   <body id="test">
-    <h1>Proto!MultiSelect 0.11</h1>
+    <h1>AutoTextboxList 0.11</h1>
     <div id="text"></div>
     <form action="test_submit" method="get" accept-charset="utf-8">
       <ol>        
-        <li id="proto-ms-list" class="input-text">
+        <li id="autotextboxlist" class="input-text">
           <label>MultiSelect Input</label>
           <input type="text" value="1,2" id="demo" />
         </li>
@@ -102,7 +101,7 @@
 						{ caption: "Ricardo Rojas", value: 22 }
 					];
 					
-          var control = new ProtoMultiSelect('demo', 'demo-autocomplete', {
+          var control = new AutoTextboxList('demo', 'demo-autocomplete', {
 						newValues: true,
 						regexSearch: false,
 						feed: json_feed,
