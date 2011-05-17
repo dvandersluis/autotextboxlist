@@ -29,26 +29,10 @@ Element.addMethods({
 		else return this.selectionStart;
 	},
 	
-	cacheData: function(element, key, value)
-	{
-		if (Object.isUndefined(this[$(element).identify()]) || !Object.isHash(this[$(element).identify()]))
-		{
-			this[$(element).identify()] = $H();
-		}
-		
-		this[$(element).identify()].set(key,value);
-		return element;
-	},
-
-	retrieveData: function(element, key)
-	{
-		return this[$(element).identify()].get(key);
-	},
-
 	onBoxDispose: function(item, obj)
 	{
 		// Set to not to "add back" values in the drop-down upon delete if they were new value
-		item = item.retrieveData('text').evalJSON(true);
+		item = item.retrieve('text').evalJSON(true);
 		if (!item.newValue)	obj.autoFeed(item);
 	},
 	
@@ -232,8 +216,8 @@ var TextboxList = Class.create({
 			function(e)
 			{
 				if (!this.current) return null;
-				if (this.current.retrieveData('type') == 'box' && e.keyCode == Event.KEY_BACKSPACE) e.stop();
-				if (this.current.retrieveData('input') && !this.checkInput()) return null;
+				if (this.current.retrieve('type') == 'box' && e.keyCode == Event.KEY_BACKSPACE) e.stop();
+				if (this.current.retrieve('input') && !this.checkInput()) return null;
 
 				if ([Event.KEY_HOME, Event.KEY_END].include(e.keyCode)) e.stop();
 
@@ -307,7 +291,7 @@ var TextboxList = Class.create({
 	{
 		var input = this.createInput({ 'class': 'smallinput' });
 		el.insert({}[where] = input);
-		input.cacheData('small', true);
+		input.store('small', true);
 		this.makeResizable(input);
 		input.hide();
 		return input;
@@ -317,7 +301,7 @@ var TextboxList = Class.create({
 	{
 		if (this.options.get('newValues'))
 		{
-			var new_value_el = this.current.retrieveData('input');
+			var new_value_el = this.current.retrieve('input');
 
 			new_value_el.value = new_value_el.value.strip();
 			
@@ -344,7 +328,7 @@ var TextboxList = Class.create({
 				this.newvalue = true;
 				var value = new_value_el.value.gsub(",", "");
 				value = this.options.get('encodeEntities') ? value.entitizeHTML() : value.escapeHTML();
-				new_value_el.retrieveData('resizable').clear().focus();
+				new_value_el.retrieve('resizable').clear().focus();
 
 				this.current_input = ""; // stops the value from being added to the element twice
 				this.add({ caption: value, value: value, newValue: true });
@@ -364,7 +348,7 @@ var TextboxList = Class.create({
 		this.options.get("onRemove")( value.replace(/[\n\r\s]+/g, ' ') );
 		this.update();
 		
-		if (el.previous() && el.previous().retrieveData('small'))
+		if (el.previous() && el.previous().retrieve('small'))
 		{
 			el.previous().remove();
 		}
@@ -374,7 +358,7 @@ var TextboxList = Class.create({
 			this.focus(el.next());
 		}
 		
-		if (el.retrieveData('type') == 'box')
+		if (el.retrieve('type') == 'box')
 		{
 			el.onBoxDispose(this);
 		}
@@ -395,17 +379,17 @@ var TextboxList = Class.create({
 		}
 		
 		this.blur();
-		el.addClassName(this.options.get('className') + '-' + el.retrieveData('type') + '-focus');
+		el.addClassName(this.options.get('className') + '-' + el.retrieve('type') + '-focus');
 		
-		if (el.retrieveData('small'))
+		if (el.retrieve('small'))
 		{
 			el.setStyle({ display: 'block' });
 		}
 		
-		if (el.retrieveData('type') == 'input') 
+		if (el.retrieve('type') == 'input') 
 		{
 			el.onInputFocus(this);
-			if (!nofocus) this.callEvent(el.retrieveData('input'), 'focus');
+			if (!nofocus) this.callEvent(el.retrieve('input'), 'focus');
 		}
 		else
 		{
@@ -421,27 +405,27 @@ var TextboxList = Class.create({
 	{
 		if (!this.current) return this;
 
-		if (this.current.retrieveData('type') == 'input')
+		if (this.current.retrieve('type') == 'input')
 		{
-			var input = this.current.retrieveData('input');
+			var input = this.current.retrieve('input');
 			if (!noblur) this.callEvent(input, 'blur');
 			input.onInputBlur(this);
 		}
 		else this.current.fire('onBoxBlur');
 		
-		if (this.current.retrieveData('small') && !input.get('value'))
+		if (this.current.retrieve('small') && !input.get('value'))
 		{
 			this.current.hide();
 		}
 		
-		this.current.removeClassName(this.options.get('className') + '-' + this.current.retrieveData('type') + '-focus');
+		this.current.removeClassName(this.options.get('className') + '-' + this.current.retrieve('type') + '-focus');
 		this.current = false;
 		return this;
 	},
 
 	createBox: function(text, options)
 	{
-		var box = new Element('a', options).addClassName(this.options.get('className') + '-box').update(text.caption.entitizeHTML()).cacheData('type', 'box');
+		var box = new Element('a', options).addClassName(this.options.get('className') + '-box').update(text.caption.entitizeHTML()).store('type', 'box');
 		var a = new Element('a', {
 			href: '#',
 			'class': 'closebutton'
@@ -454,7 +438,7 @@ var TextboxList = Class.create({
 			this.dispose(box);
 		}.bind(this));
 		
-		box.insert(a).cacheData('text', Object.toJSON(text));
+		box.insert(a).store('text', Object.toJSON(text));
 		return box;
 	},
 
@@ -465,7 +449,7 @@ var TextboxList = Class.create({
 		
 		el.observe('focus', function(e) { if (!this.isSelfEvent('focus')) this.focus(a, true); }.bind(this))
 			.observe('blur', function() { if (!this.isSelfEvent('blur')) this.blur(true); }.bind(this))
-			.observe('keydown', function(e) { this.cacheData('lastvalue', this.value).cacheData('lastcaret', this.getCaretPosition()); })
+			.observe('keydown', function(e) { this.store('lastvalue', this.value).store('lastcaret', this.getCaretPosition()); })
 			.observe('keypress', function(e)
 				{
 					var charCode = e.charCode || e.keyCode;
@@ -489,7 +473,7 @@ var TextboxList = Class.create({
 					}
 				}.bind(this));
 
-		var tmp = a.cacheData('type', 'input').cacheData('input', el).insert(el);
+		var tmp = a.store('type', 'input').store('input', el).insert(el);
 		return tmp;
 	},
 
@@ -506,8 +490,8 @@ var TextboxList = Class.create({
 
 	makeResizable: function(box)
 	{
-		var el = box.retrieveData('input');
-		el.cacheData('resizable',
+		var el = box.retrieve('input');
+		el.store('resizable',
 			new ResizableTextbox(
 				el,
 				Object.extend(
@@ -523,8 +507,8 @@ var TextboxList = Class.create({
 
 	checkInput: function()
 	{
-		var input = this.current.retrieveData('input');
-		return (!input.retrieveData('lastvalue') || (input.getCaretPosition() === 0 && input.retrieveData('lastcaret') === 0));
+		var input = this.current.retrieve('input');
+		return (!input.retrieve('lastvalue') || (input.getCaretPosition() === 0 && input.retrieve('lastcaret') === 0));
 	},
 
 	move: function(direction)
@@ -542,20 +526,15 @@ var TextboxList = Class.create({
 			default:
 				var el = this.current[(direction == 'left' ? 'previous' : 'next')]();
 		}
-		if (el && (!this.current.retrieveData('input') || this.checkInput() || direction == 'right')) this.focus(el);
+		if (el && (!this.current.retrieve('input') || this.checkInput() || direction == 'right')) this.focus(el);
 		return this;
 	},
 
 	moveDispose: function()
 	{
-		if (this.current.retrieveData('type') == 'box') return this.dispose(this.current);
+		if (this.current.retrieve('type') == 'box') return this.dispose(this.current);
 		if (this.checkInput() && this.bits.keys().length && this.current.previous()) return this.focus(this.current.previous());
 		return null;
-	},
-
-	retrieveData: function(element, key)
-	{
-		return this[$(element).identify()].get(key);
 	}
 });
 
@@ -739,7 +718,7 @@ var AutoTextboxList = Class.create(TextboxList, {
 						.update(this.autoHighlight(caption, search));
 					
 					this.autoresults.insert(el);
-					el.cacheData('result', result.evalJSON(true));
+					el.store('result', result.evalJSON(true));
 					if (ti == 0) this.autoFocus(el);
 				}, this
 			);
@@ -818,15 +797,15 @@ var AutoTextboxList = Class.create(TextboxList, {
 
 	autoAdd: function(el)
 	{
-		if (!el || !el.retrieveData('result')) return null;
+		if (!el || !el.retrieve('result')) return null;
 			
 		this.current_input = "";
-		this.add(el.retrieveData('result'));
-		delete this.data[this.data.indexOf(Object.toJSON(el.retrieveData('result')))];
-		var input = this.lastinput || this.current.retrieveData('input');
+		this.add(el.retrieve('result'));
+		delete this.data[this.data.indexOf(Object.toJSON(el.retrieve('result')))];
+		var input = this.lastinput || this.current.retrieve('input');
 		
 		this.autoHide();
-		input.retrieveData('resizable').clear().focus();
+		input.retrieve('resizable').clear().focus();
 		return this;
 	},
 
@@ -838,7 +817,7 @@ var AutoTextboxList = Class.create(TextboxList, {
 	createInput: function($super,options)
 	{
 		var box = $super(options);
-		var input = box.retrieveData('input');
+		var input = box.retrieve('input');
 
 		input.observe('keydown', function(e)
 		{
@@ -851,7 +830,7 @@ var AutoTextboxList = Class.create(TextboxList, {
 				case Event.KEY_DOWN: e.stop(); return this.autoMove('down');
 				case Event.KEY_RETURN:
 				case Event.KEY_TAB:
-					var input_value = this.current.retrieveData('input').getValue();
+					var input_value = this.current.retrieve('input').getValue();
 					
 					// If the text input is blank and the user hits Enter call the onEmptyInput callback.
 					if (input_value.blank())
@@ -864,7 +843,7 @@ var AutoTextboxList = Class.create(TextboxList, {
 
 					// Ensure that the value matches this.autocurrent before autoAdd'ing.
 					// This stops the wrong value from being added if the user types fast and hits enter before a new autocurrent is found
-					if (this.autocurrent && new RegExp(input_value, 'i').test(this.autocurrent.retrieveData('result').caption.unentitizeHTML()))
+					if (this.autocurrent && new RegExp(input_value, 'i').test(this.autocurrent.retrieve('result').caption.unentitizeHTML()))
 					{
 						this.autoAdd(this.autocurrent);
 					}
