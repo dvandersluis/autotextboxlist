@@ -793,7 +793,7 @@ var Autocompleter = Class.create({
         function(result, ti)
         {
           count++;
-          if (ti >= (this.options.get('visibleResults') ? this.options.get('visibleResults') : this.loptions.get('autocomplete').maxresults)) return;
+          if (ti >= (this.options.get('results') ? this.options.get('results') : this.loptions.get('autocomplete').maxresults)) return;
           
           var el = new Element('li');
           var json = result.evalJSON(true), caption = json.caption || json.value;
@@ -826,10 +826,11 @@ var Autocompleter = Class.create({
       if (this.results.firstDescendant())
       {
         var autoresult_height = this.results.firstDescendant().offsetHeight;
+				this.results.scrollTop = 0;
 
-        if (count > this.options.get('results'))
+				if (count > this.options.get('visibleResults'))
         {
-          this.results.setStyle({'height': (this.options.get('results') * autoresult_height) + 'px'});
+          this.results.setStyle({'height': (this.options.get('visibleResults') * autoresult_height) + 'px'});
         }
         else
         {
@@ -1052,3 +1053,5 @@ var AutoTextboxList = Class.create(TextboxList, {
     }, this);
   }
 });
+
+
