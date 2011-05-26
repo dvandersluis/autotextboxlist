@@ -7,109 +7,110 @@
     <link rel="stylesheet" href="css/multiselect.css" type="text/css" media="screen" title="Test Stylesheet" charset="utf-8" />
     <script src="js/prototype/prototype.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/autotextboxlist.js" type="text/javascript" charset="utf-8"></script>
-		<style>
-			#button_container
-			{
-				margin-left: 70px;
-				margin-bottom: 30px;
-			}
-	
-			form
-			{
-				border: 1px solid #999;
-				margin: 50px;
-				padding: 20px 30px 10px;
-			}
-			
-			form ol
-			{
-				font: 11px "Lucida Grande", "Verdana";
-				margin: 0;
-				padding: 0;
-			}
-			
-			form ol li.input-text
-			{
-				margin-bottom: 10px;
-				list-style-type: none;
-				border-bottom: 1px dotted #999;
-				padding-bottom: 10px;
-			}
-			
-			form ol li.input-text label
-			{
-				font-weight: bold;
-				cursor: pointer;
-				display: block;
-				font-size: 13px;
-				margin-bottom: 10px;
-			}
-			
-			form ol li.input-text input
-			{
-				width: 500px;
-				padding: 5px 5px 6px;
-				border: 1px solid #999;
-			}
+    
+    <style>
+      #button_container
+      {
+        margin-left: 70px;
+        margin-bottom: 30px;
+      }
+  
+      form
+      {
+        border: 1px solid #999;
+        margin: 50px;
+        padding: 20px 30px 10px;
+      }
+      
+      form ol
+      {
+        font: 11px "Lucida Grande", "Verdana";
+        margin: 0;
+        padding: 0;
+      }
+      
+      form ol li.input-text
+      {
+        margin-bottom: 10px;
+        list-style-type: none;
+        border-bottom: 1px dotted #999;
+        padding-bottom: 10px;
+      }
+      
+      form ol li.input-text label
+      {
+        font-weight: bold;
+        cursor: pointer;
+        display: block;
+        font-size: 13px;
+        margin-bottom: 10px;
+      }
+      
+      form ol li.input-text input
+      {
+        width: 500px;
+        padding: 5px 5px 6px;
+        border: 1px solid #999;
+      }
 
       div.holder
       {
         width: 90%
       }
-		</style>
+    </style>
   </head>
   
   <body id="test">
-    <h1>AutoTextboxList 0.11</h1>
+    <h1>AutoTextboxList 0.12</h1>
     <div id="text"></div>
     <form action="test_submit" method="get" accept-charset="utf-8">
       <ol>        
         <li id="autotextboxlist" class="input-text">
-          <label>MultiSelect Input</label>
-          <input type="text" value="1,2" id="demo" />
+          <label>AutoTextboxList</label>
+          <input type="text" value="" id="demo" />
         </li>
       </ol>
     </form>  
     <div id="button_container">       
         <button onclick="alert($F('demo'));return false;">Get Values</button>
     </div>
-    <script language="JavaScript">
+    <script type="text/javascript">
         document.observe('dom:loaded', function()
-				{        
+        {        
           /* Initialize the control */
           var json_feed = [
-						{ caption: "Zuriel Barron", value: 1 },
-						{ caption: "Osvaldo Tierra", value: 2 },
-						{ caption: "Manuel Mujica Lainez", value: 4 },
-						{ caption: "Gustavo Nielsen", value: 5 },
-						{ caption: "Silvina Ocampo", value: 6 },
-						{ caption: "Victoria Ocampo", value: 7 },
-						{ caption: "Hector German Oesterheld", value: 8 },
-						{ caption: "Olga Orozco", value: 9 },
-						{ caption: "Juan L. Ortiz", value: 10 },
-						{ caption: "Alicia Partnoy", value: 11 },
-						{ caption: "Roberto Payro", value: 12 },
-						{ caption: "Ricardo Piglia", value: 13 },
-						{ caption: "Felipe Pigna", value: 14 },
-						{ caption: "Alejandra Pizarnik", value: 15 },
-						{ caption: "Antonio Porchia", value: 16 },
-						{ caption: "Juan Carlos Portantiero", value: 17 },
-						{ caption: "Manuel Puig", value: 18 },
-						{ caption: "Andres Rivera", value: 19 },
-						{ caption: "Mario Rodriguez Cobos", value: 20 },
-						{ caption: "Arturo Andres Roig", value: 21 },
-						{ caption: "Ricardo Rojas", value: 22 }
-					];
-					
-          var control = new AutoTextboxList('demo', 'demo-autocomplete', {
-						newValues: true,
-						regexSearch: false,
-						feed: json_feed,
-						defaultMessage: "This is the default message",
-						sortResults: true,
+            { value: "Zuriel Barron" },
+            { value: "Osvaldo Tierra" },
+            { value: "Manuel Mujica Lainez" },
+            { value: "Gustavo Nielsen" },
+            { value: "Silvina Ocampo" },
+            { value: "Victoria Ocampo" },
+            { value: "Hector German Oesterheld" },
+            { value: "Olga Orozco" },
+            { value: "Juan L. Ortiz" },
+            { value: "Alicia Partnoy" },
+            { value: "Roberto Payro" },
+            { value: "Ricardo Piglia" },
+            { value: "Felipe Pigna" },
+            { value: "Alejandra Pizarnik" },
+            { value: "Antonio Porchia" },
+            { value: "Juan Carlos Portantiero" },
+            { value: "Manuel Puig" },
+            { value: "Andres Rivera" },
+            { value: "Mario Rodriguez Cobos" },
+            { value: "Arturo Andres Roig" },
+            { value: "Ricardo Rojas" }
+          ];
+          
+          new AutoTextboxList('demo', 'demo-autotextboxlist', {
+            newValues: true,
+            regexSearch: false,
+            feed: json_feed,
+            defaultMessage: "This is the default message",
+            sortResults: true,
             autoResize: true,
             encodeEntities: true
-					});
+          });
         });    
     </script>
   </body>  

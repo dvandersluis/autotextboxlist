@@ -145,3 +145,7 @@ Copyright: InteRiders <http://interiders.com/> - Distributed under MIT - Keep th
   - Added encodeEntities option (default: false) that will automatically encode HTML entities to their unicode characters if set.
   - Fixed < causing a new value to be inserted.
   - Pressing tab with the autocomplete open will now cause the selected value to be inserted (like enter). 
+
+### 0.12
+  - Decoupled Autocomplete element from AutoTextboxList.
+  - Updated Prototype to 1.7, removed unneeded Scriptaculous.
