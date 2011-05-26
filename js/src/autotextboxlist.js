@@ -32,7 +32,7 @@ var AutoTextboxList = Class.create(TextboxList, {
     this.element.insert({ after: this.autoholder });
     
     // Autocomplete sets up some event handlers that we don't need here
-    this.maininput.retrieve('input').retrieve('focus-event').stop();
+    //this.maininput.retrieve('input').retrieve('focus-event').stop();
     this.maininput.retrieve('input').retrieve('blur-event').stop();
     
     this.overrideAutocompleteMethods();
@@ -48,10 +48,7 @@ var AutoTextboxList = Class.create(TextboxList, {
     // We need to load from input as part of the AJAX request when using feedURL
     // or else the data won't have completed being fetched before the data in the 
     // input is loaded
-    if (Object.isUndefined(this.options.get('feedURL')) && this.options.get('loadFromInput'))
-    {
-      this.loadFromInput()
-    }
+		if (this.options.get('loadFromInput')) this.loadFromInput()
   },
 
   overrideAutocompleteMethods: function()

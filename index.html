@@ -79,27 +79,27 @@
         {        
           /* Initialize the control */
           var json_feed = [
-            { value: "Zuriel Barron" },
-            { value: "Osvaldo Tierra" },
-            { value: "Manuel Mujica Lainez" },
-            { value: "Gustavo Nielsen" },
-            { value: "Silvina Ocampo" },
-            { value: "Victoria Ocampo" },
-            { value: "Hector German Oesterheld" },
-            { value: "Olga Orozco" },
-            { value: "Juan L. Ortiz" },
-            { value: "Alicia Partnoy" },
-            { value: "Roberto Payro" },
-            { value: "Ricardo Piglia" },
-            { value: "Felipe Pigna" },
-            { value: "Alejandra Pizarnik" },
-            { value: "Antonio Porchia" },
-            { value: "Juan Carlos Portantiero" },
-            { value: "Manuel Puig" },
-            { value: "Andres Rivera" },
-            { value: "Mario Rodriguez Cobos" },
-            { value: "Arturo Andres Roig" },
-            { value: "Ricardo Rojas" }
+            { value: "Zuriel Barron", description: "Company Name &bull; zbarron@company.com" },
+            { value: "Osvaldo Tierra", description: "Company Name &bull; otierra@company.com" },
+            { value: "Manuel Mujica Lainez", description: "Company Name &bull; mmlainez@company.com" },
+            { value: "Gustavo Nielsen", description: "Company Name &bull; gneilsen@company.com" },
+            { value: "Silvina Ocampo", description: "Company Name &bull; socampo@company.com" },
+            { value: "Victoria Ocampo", description: "Company Name &bull; vocampo@company.com" },
+            { value: "Hector German Oesterheld", description: "Company Name &bull; hgoesterheld@company.com" },
+            { value: "Olga Orozco", description: "Company Name &bull; oorozco@company.com" },
+            { value: "Juan L. Ortiz", description: "Company Name &bull; jlortiz@company.com" },
+            { value: "Alicia Partnoy", description: "Company Name &bull; apartnoy@company.com" },
+            { value: "Roberto Payro", description: "Company Name &bull; rpayro@company.com" },
+            { value: "Ricardo Piglia", description: "Company Name &bull; rpiglia@company.com" },
+            { value: "Felipe Pigna", description: "Company Name &bull; fpigna@company.com" },
+            { value: "Alejandra Pizarnik", description: "Company Name &bull; apizarnik@company.com" },
+            { value: "Antonio Porchia", description: "Company Name &bull; aporchia@company.com" },
+            { value: "Juan Carlos Portantiero", description: "Company Name &bull; jcportantiero@company.com" },
+            { value: "Manuel Puig", description: "Company Name &bull; mpuig@company.com" },
+            { value: "Andres Rivera", description: "Company Name &bull; arivera@company.com" },
+            { value: "Mario Rodriguez Cobos", description: "Company Name &bull; mrcobos@company.com" },
+            { value: "Arturo Andres Roig", description: "Company Name &bull; aaroig@company.com" },
+            { value: "Ricardo Rojas", description: "Company Name &bull; rrojas@company.com" }
           ];
           
           new AutoTextboxList('demo', 'demo-autotextboxlist', {
@@ -109,7 +109,9 @@
             defaultMessage: "This is the default message",
             sortResults: true,
             autoResize: true,
-            encodeEntities: true
+            encodeEntities: true,
+						results: 20,
+						visibleResults: 5
           });
         });    
     </script>

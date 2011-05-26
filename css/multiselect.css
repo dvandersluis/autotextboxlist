@@ -28,3 +28,4 @@ div.autocomplete ul li { padding: 5px 12px; z-index: 1000; cursor: pointer; marg
 div.autocomplete ul li em { font-weight: bold; font-style: normal; background: #ccc; }
 div.autocomplete ul li.auto-focus { background: #4173CC; color: #fff; }
 div.autocomplete ul li.auto-focus em { background: none; }
+div.autocomplete ul li span.description { font-style: italic; font-size: 90% }
