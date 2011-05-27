@@ -245,7 +245,7 @@ var TextboxList = Class.create({
 
   add: function(text, html)
   {
-    var id = this.id_base + '-' + this.count++;
+		var id = this.id_base + '-' + this.count++;
     var el = this.createBox(
       $pick(html, text),
       {
@@ -292,37 +292,27 @@ var TextboxList = Class.create({
   {
     if (this.options.get('newValues'))
     {
-      var new_value_el = this.current.retrieve('input');
-
-      new_value_el.value = new_value_el.value.strip();
+      var new_value_el = this.current.retrieve('input'), new_value = new_value_el.value.strip(), comma_pos = new_value.indexOf(",");
       
-      if (new_value_el.value.indexOf(",") < (new_value_el.value.length - 1))
+      if (comma_pos != -1)
       {
-        var comma_pos = new_value_el.value.indexOf(",");
-        if (comma_pos > 0)
-        {
-          new_value_el.value = new_value_el.value.substr(0, comma_pos).strip();
-        }
-      }
-      else
-      {
-        new_value_el.value = new_value_el.value.strip();
+        new_value = new_value.substr(0, comma_pos).strip();
       }
       
       if (!this.options.get("spaceReplace").blank())
       {
-        new_value_el.value.gsub(" ", this.options.get("spaceReplace"));
+        new_value.gsub(" ", this.options.get("spaceReplace"));
       }
       
-      if (!new_value_el.value.blank())
+			new_value_el.retrieve('resizable').clear().focus();
+			this.current_input = ""; // stops the value from being added to the element twice
+			
+      if (!new_value.blank())
       {
         this.newvalue = true;
-        var value = new_value_el.value.gsub(",", "");
-        value = this.options.get('encodeEntities') ? value.entitizeHTML() : value.escapeHTML();
-        new_value_el.retrieve('resizable').clear().focus();
+        new_value = this.options.get('encodeEntities') ? new_value.entitizeHTML() : new_value.escapeHTML();
 
-        this.current_input = ""; // stops the value from being added to the element twice
-        this.add({ caption: value, value: value, newValue: true });
+        this.add({ caption: new_value, value: new_value, newValue: true });
 
         return true;
       }
@@ -446,7 +436,8 @@ var TextboxList = Class.create({
           var charCode = e.charCode || e.keyCode;
           if (e.keyCode == Event.KEY_RETURN || charCode == Event.CHAR_COMMA)
           {
-            this.insertCurrentValue = true;
+            e.stop();
+						this.insertCurrentValue = true;
           }
         }.bind(this))
       .observe('keyup', function(e)
