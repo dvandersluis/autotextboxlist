@@ -196,9 +196,8 @@ var TextboxList = Class.create({
           case Event.KEY_LEFT: return this.move('left');
           case Event.KEY_RIGHT: return this.move('right');
 
-          case Event.KEY_DELETE:
-          case Event.KEY_BACKSPACE:
-            return this.moveDispose();
+          case Event.KEY_DELETE: return this.moveDispose('next');
+          case Event.KEY_BACKSPACE: return this.moveDispose('previous');
         }
         
         return null;
@@ -245,7 +244,7 @@ var TextboxList = Class.create({
 
   add: function(text, html)
   {
-		var id = this.id_base + '-' + this.count++;
+    var id = this.id_base + '-' + this.count++;
     var el = this.createBox(
       $pick(html, text),
       {
@@ -304,9 +303,9 @@ var TextboxList = Class.create({
         new_value.gsub(" ", this.options.get("spaceReplace"));
       }
       
-			new_value_el.retrieve('resizable').clear().focus();
-			this.current_input = ""; // stops the value from being added to the element twice
-			
+      new_value_el.retrieve('resizable').clear().focus();
+      this.current_input = ""; // stops the value from being added to the element twice
+      
       if (!new_value.blank())
       {
         this.newvalue = true;
@@ -320,9 +319,11 @@ var TextboxList = Class.create({
     return false;
   },
 
-  dispose: function(el)
+  dispose: function(el, direction)
   {
-    this.bits.unset(el.id);
+    if (!direction) direction = 'next';
+		
+		this.bits.unset(el.id);
     // Dynamic updating... why not?
     var value = el.innerHTML.stripScripts();
     value = this.options.get('encodeEntities') ? value.entitizeHTML() : value.escapeHTML();
@@ -336,7 +337,14 @@ var TextboxList = Class.create({
     
     if (this.current == el)
     {
-      this.focus(el.next());
+      if (el[direction]()) 
+			{
+				this.focus(el[direction]());
+			}
+			else
+			{
+				this.focus(el.next());
+			}
     }
     
     if (el.retrieve('type') == 'box')
@@ -437,7 +445,7 @@ var TextboxList = Class.create({
           if (e.keyCode == Event.KEY_RETURN || charCode == Event.CHAR_COMMA)
           {
             e.stop();
-						this.insertCurrentValue = true;
+            this.insertCurrentValue = true;
           }
         }.bind(this))
       .observe('keyup', function(e)
@@ -512,9 +520,9 @@ var TextboxList = Class.create({
     return this;
   },
 
-  moveDispose: function()
+  moveDispose: function(direction)
   {
-    if (this.current.retrieve('type') == 'box') return this.dispose(this.current);
+    if (this.current.retrieve('type') == 'box') return this.dispose(this.current, direction);
     if (this.checkInput() && this.bits.keys().length && this.current.previous()) return this.focus(this.current.previous());
     return null;
   }
@@ -1054,7 +1062,7 @@ var AutoTextboxList = Class.create(TextboxList, {
       this.auto.data.select(function(el) { return input_values.include(el.evalJSON(true).value) }).each(function(el)
       {
         el = el.evalJSON(true);
-        this.auto.add({ value: el.value, caption: el.caption});
+        this.add({ value: el.value, caption: el.caption});
         delete this.auto.data[this.data.indexOf(Object.toJSON(el))];
         input_values = input_values.without(el.value);
       }, this);
@@ -1064,7 +1072,7 @@ var AutoTextboxList = Class.create(TextboxList, {
     {
       if (!el.empty())
       {
-        this.auto.add({ value: el, caption: el });
+        this.add({ value: el, caption: el });
       }
     }, this);
   }

@@ -146,7 +146,7 @@ var AutoTextboxList = Class.create(TextboxList, {
       this.auto.data.select(function(el) { return input_values.include(el.evalJSON(true).value) }).each(function(el)
       {
         el = el.evalJSON(true);
-        this.auto.add({ value: el.value, caption: el.caption});
+        this.add({ value: el.value, caption: el.caption});
         delete this.auto.data[this.data.indexOf(Object.toJSON(el))];
         input_values = input_values.without(el.value);
       }, this);
@@ -156,7 +156,7 @@ var AutoTextboxList = Class.create(TextboxList, {
     {
       if (!el.empty())
       {
-        this.auto.add({ value: el, caption: el });
+        this.add({ value: el, caption: el });
       }
     }, this);
   }

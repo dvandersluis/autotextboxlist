@@ -149,3 +149,8 @@ Copyright: InteRiders <http://interiders.com/> - Distributed under MIT - Keep th
 ### 0.12
   - Decoupled Autocomplete element from AutoTextboxList.
   - Updated Prototype to 1.7, removed unneeded Scriptaculous.
+  - Autocomplete items can now have a description.
+  - Flipped the actual meaning of visibleResults and results options, so that visibleResults controls how many autocomplete results are shown and results allows a maximum number of returned results to be specified.
+  - Fixed blank items incorrectly getting inserted when pressing comma with no input.
+  - Added page up/page down for autocomplete.
+  - When deleting existing items, delete selects the next item and backspace selects the previous.

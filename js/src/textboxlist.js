@@ -51,9 +51,8 @@ var TextboxList = Class.create({
           case Event.KEY_LEFT: return this.move('left');
           case Event.KEY_RIGHT: return this.move('right');
 
-          case Event.KEY_DELETE:
-          case Event.KEY_BACKSPACE:
-            return this.moveDispose();
+          case Event.KEY_DELETE: return this.moveDispose('next');
+          case Event.KEY_BACKSPACE: return this.moveDispose('previous');
         }
         
         return null;
@@ -175,9 +174,11 @@ var TextboxList = Class.create({
     return false;
   },
 
-  dispose: function(el)
+  dispose: function(el, direction)
   {
-    this.bits.unset(el.id);
+    if (!direction) direction = 'next';
+		
+		this.bits.unset(el.id);
     // Dynamic updating... why not?
     var value = el.innerHTML.stripScripts();
     value = this.options.get('encodeEntities') ? value.entitizeHTML() : value.escapeHTML();
@@ -191,7 +192,14 @@ var TextboxList = Class.create({
     
     if (this.current == el)
     {
-      this.focus(el.next());
+      if (el[direction]()) 
+			{
+				this.focus(el[direction]());
+			}
+			else
+			{
+				this.focus(el.next());
+			}
     }
     
     if (el.retrieve('type') == 'box')
@@ -367,9 +375,9 @@ var TextboxList = Class.create({
     return this;
   },
 
-  moveDispose: function()
+  moveDispose: function(direction)
   {
-    if (this.current.retrieve('type') == 'box') return this.dispose(this.current);
+    if (this.current.retrieve('type') == 'box') return this.dispose(this.current, direction);
     if (this.checkInput() && this.bits.keys().length && this.current.previous()) return this.focus(this.current.previous());
     return null;
   }
