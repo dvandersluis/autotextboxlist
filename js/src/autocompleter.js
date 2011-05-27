@@ -93,6 +93,9 @@ var Autocompleter = Class.create({
         case Event.KEY_UP: e.stop(); return this.move('up');
         case Event.KEY_DOWN: e.stop(); return this.move('down');
         
+        case Event.KEY_PAGEUP: e.stop(); return this.scroll('up');
+        case Event.KEY_PAGEDOWN: e.stop(); return this.scroll('down');
+        
         case Event.KEY_RETURN:
         case Event.KEY_TAB:
           e.stop();
@@ -123,6 +126,8 @@ var Autocompleter = Class.create({
         case Event.KEY_UP:
         case Event.KEY_DOWN:
         case Event.KEY_ESC:
+        case Event.KEY_PAGEUP:
+        case Event.KEY_PAGEDOWN:
           break;
         
         default:
@@ -273,13 +278,13 @@ var Autocompleter = Class.create({
             })
             .observe('mouseover', function() { that.focus(this); } )
             .update(this.highlight(caption, search));
-						
-				  if (json.description)
-					{
-						el.insert({ bottom: "<br />" });
-						var desc = new Element('span', { className: 'description' }).update(json.description)
-						el.insert({ bottom: desc });
-					}
+            
+          if (json.description)
+          {
+            el.insert({ bottom: "<br />" });
+            var desc = new Element('span', { className: 'description' }).update(json.description)
+            el.insert({ bottom: desc });
+          }
           
           this.results.insert(el);
           el.store('result', result.evalJSON(true));
@@ -299,9 +304,9 @@ var Autocompleter = Class.create({
       if (this.results.firstDescendant())
       {
         var autoresult_height = this.results.firstDescendant().offsetHeight;
-				this.results.scrollTop = 0;
+        this.results.scrollTop = 0;
 
-				if (count > this.options.get('visibleResults'))
+        if (count > this.options.get('visibleResults'))
         {
           this.results.setStyle({'height': (this.options.get('visibleResults') * autoresult_height) + 'px'});
         }
@@ -355,6 +360,24 @@ var Autocompleter = Class.create({
     if (!this.resultsshown) return null;
     this.focus(this.current[(direction == 'up' ? 'previous' : 'next')]());
     this.results.scrollTop = this.current.positionedOffset()[1] - this.current.getHeight();
+    return this;
+  },
+  
+  scroll: function(direction)
+  {
+    direction = (direction == 'up' ? 'previous' : 'next');
+    if (!this.resultsshown || !this.current[direction]()) return null;
+    
+    var next = this.current[direction](this.options.get('visibleResults') - 2);
+    if (!next) 
+    {
+      next = this.current[direction + 'Siblings']().last();
+    }
+    
+    this.focus(next);
+    var scrollOffset = this.current.positionedOffset()[1];
+    if (direction == 'next') scrollOffset -= this.current.getHeight() * (this.options.get('visibleResults') - 1);
+    this.results.scrollTop = scrollOffset;
     return this;
   }
 });
